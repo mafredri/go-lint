@@ -4,7 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd.
 
-// Package lint contains a linter for Go source code.
+// Package lint is a fork of golint (golang.org/x/lint) and contains a
+// linter for Go source code.
 package lint
 
 import (
@@ -675,6 +676,11 @@ func (f *file) lintNames() {
 	})
 }
 
+// Name returns a different name if it should be different.
+func Name(name string) (should string) {
+	return lintName(name)
+}
+
 // lintName returns a different name if it should be different.
 func lintName(name string) (should string) {
 	// Fast path for simple cases: "_" and all lowercase.
@@ -785,6 +791,15 @@ var commonInitialisms = map[string]bool{
 	"XMPP":  true,
 	"XSRF":  true,
 	"XSS":   true,
+}
+
+// SetInitialism adds initialism entries for linting names and if they
+// should be considered initialisms or not.
+//
+// Only add entries that are highly unlikely to be non-initialisms.
+// For instance, "ID" is fine (Freudian code is rare), but "AND" is not.
+func SetInitialism(entry string, should bool) {
+	commonInitialisms[entry] = should
 }
 
 // lintTypeDoc examines the doc comment on a type.
